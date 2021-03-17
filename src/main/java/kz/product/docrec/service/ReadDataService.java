@@ -11,4 +11,6 @@ public interface ReadDataService {
 
     ResponseEntity<?> readIdentityCardData(MultipartFile multipartFile) throws TesseractException, IOException, ImageReadException;
 
+    ResponseEntity<?> readIdentityCardDataOld(MultipartFile multipartFile) throws TesseractException, IOException, ImageReadException;
+
 }
