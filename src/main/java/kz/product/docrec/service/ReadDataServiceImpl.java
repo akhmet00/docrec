@@ -50,8 +50,8 @@ public class ReadDataServiceImpl implements ReadDataService {
             BufferedImage cropedBirthday = cropBirthday(in2, rectangle);
             BufferedImage cropedIin = cropIin(in2, rectangle);
 
-            File outputfile = new File("/home/escanor/IdeaProjects/docrec/src/main/resources/static/files/photos/kek/lol.jpg");
-            ImageIO.write(in2, "jpg", outputfile);
+//            File outputfile = new File("/home/escanor/IdeaProjects/docrec/src/main/resources/static/files/photos/kek/lol.jpg");
+//            ImageIO.write(in2, "jpg", outputfile);
 
 
             String lastname = tesseract.doOCR(cropedLastname).replace("\n", "");
