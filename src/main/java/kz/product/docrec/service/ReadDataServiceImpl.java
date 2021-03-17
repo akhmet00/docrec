@@ -1,11 +1,9 @@
 package kz.product.docrec.service;
 
 import kz.product.docrec.dto.IdCardDTO;
+import kz.product.docrec.exception.CustomConflictException;
 import kz.product.docrec.util.TextParser;
-import lombok.SneakyThrows;
 import net.sourceforge.tess4j.Tesseract;
-import net.sourceforge.tess4j.TesseractException;
-import org.apache.sanselan.ImageReadException;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,16 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Base64;
-import java.util.Date;
 
 @Service
 public class ReadDataServiceImpl implements ReadDataService {
@@ -39,42 +30,48 @@ public class ReadDataServiceImpl implements ReadDataService {
         this.textParser = textParser;
     }
 
-    @SneakyThrows
+
     @Override
-    public ResponseEntity<?> readIdentityCardData(MultipartFile multipartFile) throws TesseractException, IOException, ImageReadException {
+    public ResponseEntity<?> readIdentityCardData(MultipartFile multipartFile) {
 
-        BufferedImage in = ImageIO.read(convert(multipartFile));
-
-        Rectangle rectangle = new Rectangle(0,0 ,900, 130);
-
-        BufferedImage in2 = Scalr.resize(in, 2250, 1450);
+        try {
 
 
-        BufferedImage cropedLastname = cropLastname(in2, rectangle);
-        BufferedImage cropedFirstName = cropFirstname(in2, rectangle);
-        BufferedImage cropedFathersName = cropFathersname(in2, rectangle);
-        BufferedImage cropedBirthday= cropBirthday(in2, rectangle);
-        BufferedImage cropedIin = cropIin(in2, rectangle);
+            BufferedImage in = ImageIO.read(convert(multipartFile));
 
-        File outputfile = new File("/home/escanor/IdeaProjects/docrec/src/main/resources/static/files/photos/kek/lol.jpg");
-        ImageIO.write(in2, "jpg", outputfile);
+            Rectangle rectangle = new Rectangle(0, 0, 900, 130);
+
+            BufferedImage in2 = Scalr.resize(in, 2250, 1450);
 
 
-        String lastname = tesseract.doOCR(cropedLastname).replace("\n", "");
-        String firstname = tesseract.doOCR(cropedFirstName).replace("\n", "");
-        String fathersname = tesseract.doOCR(cropedFathersName).replace("\n", "");
-        String birthday = tesseract.doOCR(cropedBirthday).replace("\n", "");
-        String iin = tesseract.doOCR(cropedIin).replace("\n", "");
+            BufferedImage cropedLastname = cropLastname(in2, rectangle);
+            BufferedImage cropedFirstName = cropFirstname(in2, rectangle);
+            BufferedImage cropedFathersName = cropFathersname(in2, rectangle);
+            BufferedImage cropedBirthday = cropBirthday(in2, rectangle);
+            BufferedImage cropedIin = cropIin(in2, rectangle);
 
-        System.err.println(lastname);
-        System.err.println(firstname);
-        System.err.println(fathersname);
-        System.err.println(birthday);
-        System.err.println(iin);
+            File outputfile = new File("/home/escanor/IdeaProjects/docrec/src/main/resources/static/files/photos/kek/lol.jpg");
+            ImageIO.write(in2, "jpg", outputfile);
 
-        IdCardDTO idCardDTO = new IdCardDTO(firstname, lastname , fathersname, iin, birthday);
 
-        return new ResponseEntity<>(idCardDTO, HttpStatus.OK);
+            String lastname = tesseract.doOCR(cropedLastname).replace("\n", "");
+            String firstname = tesseract.doOCR(cropedFirstName).replace("\n", "");
+            String fathersname = tesseract.doOCR(cropedFathersName).replace("\n", "");
+            String birthday = tesseract.doOCR(cropedBirthday).replace("\n", "");
+            String iin = tesseract.doOCR(cropedIin).replace("\n", "");
+
+            System.err.println(lastname);
+            System.err.println(firstname);
+            System.err.println(fathersname);
+            System.err.println(birthday);
+            System.err.println(iin);
+
+            IdCardDTO idCardDTO = new IdCardDTO(firstname, lastname, fathersname, iin, birthday);
+
+            return new ResponseEntity<>(idCardDTO, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new CustomConflictException(e.getLocalizedMessage());
+        }
     }
 
 
@@ -107,8 +104,6 @@ public class ReadDataServiceImpl implements ReadDataService {
         fos.close();
         return convFile;
     }
-
-
 
 
 }

@@ -7,6 +7,7 @@ import org.apache.sanselan.ImageReadException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,7 +28,7 @@ public class ReadController {
     }
 
 
-    @RequestMapping("/identityCard")
+    @PostMapping("/identityCard")
     public ResponseEntity<?> readFromPhoto(@RequestParam("file") MultipartFile multipartFile) throws TesseractException, IOException, ImageReadException {
         return readDataService.readIdentityCardData(multipartFile);
     }
