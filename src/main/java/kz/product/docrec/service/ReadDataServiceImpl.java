@@ -8,6 +8,7 @@ import net.sourceforge.tess4j.TesseractException;
 import org.apache.sanselan.ImageReadException;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,12 +24,14 @@ import java.io.IOException;
 @Service
 public class ReadDataServiceImpl implements ReadDataService {
 
-    private final Tesseract tesseract;
+    private final Tesseract tesseractChars;
+    private final Tesseract tesseractNumbers;
     private final TextParser textParser;
 
     @Autowired
-    public ReadDataServiceImpl(Tesseract tesseract, TextParser textParser) {
-        this.tesseract = tesseract;
+    public ReadDataServiceImpl(@Qualifier("tesseractChars") Tesseract tesseractChars, @Qualifier("tesseractNumbers")Tesseract tesseractNumbers, TextParser textParser) {
+        this.tesseractChars = tesseractChars;
+        this.tesseractNumbers = tesseractNumbers;
         this.textParser = textParser;
     }
 
@@ -56,11 +59,11 @@ public class ReadDataServiceImpl implements ReadDataService {
 //            ImageIO.write(cropedLastname, "jpg", outputfile);
 //
 
-            String lastname = tesseract.doOCR(cropedLastname).replace("\n", "");
-            String firstname = tesseract.doOCR(cropedFirstName).replace("\n", "");
-            String fathersname = tesseract.doOCR(cropedFathersName).replace("\n", "");
-            String birthday = tesseract.doOCR(cropedBirthday).replace("\n", "");
-            String iin = tesseract.doOCR(cropedIin).replace("\n", "");
+            String lastname = tesseractChars.doOCR(cropedLastname).replace("\n", "");
+            String firstname = tesseractChars.doOCR(cropedFirstName).replace("\n", "");
+            String fathersname = tesseractChars.doOCR(cropedFathersName).replace("\n", "");
+            String birthday = tesseractNumbers.doOCR(cropedBirthday).replace("\n", "");
+            String iin = tesseractNumbers.doOCR(cropedIin).replace("\n", "");
 
             System.err.println(lastname);
             System.err.println(firstname);
@@ -98,11 +101,11 @@ public class ReadDataServiceImpl implements ReadDataService {
 //            ImageIO.write(cropedIin, "jpg", outputfile);
 
 
-            String lastname = tesseract.doOCR(cropedLastname).replace("\n", "").replace(".", "");
-            String firstname = tesseract.doOCR(cropedFirstName).replace("\n", "").replace(".", "");
-            String fathersname = tesseract.doOCR(cropedFathersName).replace("\n", "").replace(".", "");
-            String birthday = tesseract.doOCR(cropedBirthday).replace("\n", "");
-            String iin = tesseract.doOCR(cropedIin).replace("\n", "").replace(".", "");
+            String lastname = tesseractChars.doOCR(cropedLastname).replace("\n", "").replace(".", "");
+            String firstname = tesseractChars.doOCR(cropedFirstName).replace("\n", "").replace(".", "");
+            String fathersname = tesseractChars.doOCR(cropedFathersName).replace("\n", "").replace(".", "");
+            String birthday = tesseractNumbers.doOCR(cropedBirthday).replace("\n", "");
+            String iin = tesseractNumbers.doOCR(cropedIin).replace("\n", "").replace(".", "");
 
             System.err.println(lastname);
             System.err.println(firstname);
