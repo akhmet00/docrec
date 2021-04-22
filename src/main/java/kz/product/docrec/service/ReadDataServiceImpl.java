@@ -1,5 +1,6 @@
 package kz.product.docrec.service;
 
+import kz.product.docrec.constants.PathConstants;
 import kz.product.docrec.dto.IdCardDTO;
 import kz.product.docrec.exception.CustomConflictException;
 import kz.product.docrec.util.TextParser;
@@ -43,16 +44,23 @@ public class ReadDataServiceImpl implements ReadDataService {
 
             BufferedImage in = ImageIO.read(convert(multipartFile[0]));
 
+
             Rectangle rectangle = new Rectangle(0, 0, 900, 130);
 
             BufferedImage in2 = Scalr.resize(in, 2250, 1450);
+            BufferedImage mono = invertImage(in2);
+
+            File outputFilee = new File(PathConstants.PHOTOS_DIRECTORY + "/keksik.jpg");
+            ImageIO.write(mono, "jpg", outputFilee);
+
+            BufferedImage croppedLastname = cropLastname(mono, rectangle);
+            BufferedImage croppedFirstName = cropFirstname(mono, rectangle);
+            BufferedImage croppedFathersName = cropFathersname(mono, rectangle);
+            BufferedImage croppedBirthday = cropBirthday(mono, rectangle);
+            BufferedImage croppedIin = cropIin(mono, rectangle);
 
 
-            BufferedImage croppedLastname = cropLastname(in2, rectangle);
-            BufferedImage croppedFirstName = cropFirstname(in2, rectangle);
-            BufferedImage croppedFathersName = cropFathersname(in2, rectangle);
-            BufferedImage croppedBirthday = cropBirthday(in2, rectangle);
-            BufferedImage croppedIin = cropIin(in2, rectangle);
+
 
             String lastname = tesseractChars.doOCR(croppedLastname).replace("\n", "");
             String firstname = tesseractChars.doOCR(croppedFirstName).replace("\n", "");
@@ -66,10 +74,14 @@ public class ReadDataServiceImpl implements ReadDataService {
 
             BufferedImage in4 = Scalr.resize(in3, 2250, 1450);
 
-            BufferedImage croppedIdCardNumber = cropIdCardNumber(in4, rectangle1);
+            BufferedImage mono2 = invertImage(in4);
+
+            BufferedImage croppedIdCardNumber = cropIdCardNumber(mono2, rectangle1);
+
+            File outputFile = new File(PathConstants.PHOTOS_DIRECTORY + "/keks.jpg");
+            ImageIO.write(croppedIdCardNumber, "jpg", outputFile);
 
             String idCardNumber = tesseractNumbers.doOCR(croppedIdCardNumber).replace("\n", "").replace(".", "");
-            ;
 
             System.err.println(idCardNumber);
 
@@ -101,6 +113,7 @@ public class ReadDataServiceImpl implements ReadDataService {
             BufferedImage cropedIin = cropIinOld(in2, rectangle);
 
 
+
             String lastname = tesseractChars.doOCR(cropedLastname).replace("\n", "").replace(".", "");
             String firstname = tesseractChars.doOCR(cropedFirstName).replace("\n", "").replace(".", "");
             String fathersname = tesseractChars.doOCR(cropedFathersName).replace("\n", "").replace(".", "");
@@ -126,6 +139,36 @@ public class ReadDataServiceImpl implements ReadDataService {
     }
 
 
+    public static BufferedImage invertImage(BufferedImage inputFile) {
+
+
+        for (int x = 0; x < inputFile.getWidth(); x++) {
+            for (int y = 0; y < inputFile.getHeight(); y++) {
+                int rgba = inputFile.getRGB(x, y);
+                Color col = new Color(rgba, true);
+                int MONO_THRESHOLD = 395;
+                if (col.getRed() + col.getGreen() + col.getBlue() > MONO_THRESHOLD)
+                    col = new Color(255, 255, 255);
+                else
+                    col = new Color(0, 0, 0);
+                inputFile.setRGB(x, y, col.getRGB());
+            }
+        }
+
+
+        try {
+            File outputFile = new File(PathConstants.PHOTOS_DIRECTORY + "/kek.jpg");
+            ImageIO.write(inputFile, "jpg", outputFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return inputFile;
+    }
+
+
+
+
+
     private BufferedImage cropLastname(BufferedImage src, Rectangle rect) {
         return src.getSubimage(770, 470, rect.width, rect.height);
     }
@@ -147,7 +190,7 @@ public class ReadDataServiceImpl implements ReadDataService {
     }
 
     private BufferedImage cropIdCardNumber(BufferedImage src, Rectangle rect) {
-        return src.getSubimage(1450, 10, rect.width, rect.height);
+        return src.getSubimage(1450, 0, rect.width, rect.height);
     }
 
     ///////////////////////////
