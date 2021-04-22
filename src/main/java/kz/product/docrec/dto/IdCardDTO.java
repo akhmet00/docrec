@@ -24,5 +24,7 @@ public class IdCardDTO {
 
     private String birthday;
 
+    private String idCardNumber;
+
 
 }

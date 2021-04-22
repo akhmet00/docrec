@@ -10,7 +10,7 @@
 Provides main information  
 ```
 POST /api/v1/read/identityCard
-Request Param: "file" multipart file
+Request Param: "file" multipart[] files
 ```
 
 
@@ -22,7 +22,8 @@ Request Param: "file" multipart file
     "lastName": "РАЙХАНОВ", //String
     "fathersName": "МАРАТОВИЧ", //String
     "iin": "000126501343", //String
-    "birthday": "26.01.20002" //String
+    "birthday": "26.01.20002", //String
+    "idCardNumber":"040603533"
 }
 ```
 
@@ -33,7 +34,7 @@ Request Param: "file" multipart file
 Provides main information
 ```
 POST /api/v1/read/identityCard/old
-Request Param: "file" multipart file 
+Request Param: "file" multipart[] files
 ```
 
 
@@ -46,6 +47,7 @@ Request Param: "file" multipart file
     "fathersName": "МАРАТОВИЧ", //String
     "iin": "000126501343", //String 
     "birthday": "26.01.20002" //String
+    "idCardNumber":"0356882405" //String
 }
 ```
 
