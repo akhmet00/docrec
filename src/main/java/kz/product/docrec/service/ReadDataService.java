@@ -9,9 +9,8 @@ import java.io.IOException;
 
 public interface ReadDataService {
 
-    ResponseEntity<?> readIdentityCardData(MultipartFile[] multipartFile) throws TesseractException, IOException, ImageReadException;
+    ResponseEntity<?> readIdentityCard(MultipartFile[] multipartFile) throws TesseractException, IOException, ImageReadException;
 
 
-    ResponseEntity<?> readIdentityCardDataOld(MultipartFile[] multipartFile) throws TesseractException, IOException, ImageReadException;
 
 }

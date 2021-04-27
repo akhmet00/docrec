@@ -36,22 +36,38 @@ public class ReadDataServiceImpl implements ReadDataService {
         this.textParser = textParser;
     }
 
-
     @Override
-    public ResponseEntity<?> readIdentityCardData(MultipartFile[] multipartFile) {
+    public ResponseEntity<?> readIdentityCard(MultipartFile[] multipartFile) throws TesseractException, IOException, ImageReadException {
+        BufferedImage in = ImageIO.read(convert(multipartFile[0]));
+
+        Rectangle rectangle = new Rectangle(0, 0, 900, 130);
+
+        BufferedImage in2 = Scalr.resize(in, 2250, 1450);
+        BufferedImage mono = invertImage(in2);
+
+        BufferedImage croppedParameter = cropParameter(mono);
+
+        String paraeter = tesseractChars.doOCR(croppedParameter).replace("\n", " ");
+
+        IdCardDTO idCardDTO = null;
+
+        if(paraeter.contains("ЖЕКЕКУӘЛІК"))
+            idCardDTO=   readIdentityCardData(multipartFile, rectangle);
+        else idCardDTO = readIdentityCardDataOld(multipartFile, rectangle);
+
+        return new ResponseEntity<>(idCardDTO, HttpStatus.OK);
+    }
+
+
+    private IdCardDTO readIdentityCardData(MultipartFile[] multipartFile, Rectangle rectangle) {
 
         try {
 
             BufferedImage in = ImageIO.read(convert(multipartFile[0]));
 
-
-            Rectangle rectangle = new Rectangle(0, 0, 900, 130);
-
             BufferedImage in2 = Scalr.resize(in, 2250, 1450);
             BufferedImage mono = invertImage(in2);
 
-            File outputFilee = new File(PathConstants.PHOTOS_DIRECTORY + "/keksik.jpg");
-            ImageIO.write(mono, "jpg", outputFilee);
 
             BufferedImage croppedLastname = cropLastname(mono, rectangle);
             BufferedImage croppedFirstName = cropFirstname(mono, rectangle);
@@ -78,30 +94,25 @@ public class ReadDataServiceImpl implements ReadDataService {
 
             BufferedImage croppedIdCardNumber = cropIdCardNumber(mono2, rectangle1);
 
-            File outputFile = new File(PathConstants.PHOTOS_DIRECTORY + "/keks.jpg");
-            ImageIO.write(croppedIdCardNumber, "jpg", outputFile);
+//            File outputFile = new File(PathConstants.PHOTOS_DIRECTORY + "/keks.jpg");
+//            ImageIO.write(croppedIdCardNumber, "jpg", outputFile);
 
             String idCardNumber = tesseractNumbers.doOCR(croppedIdCardNumber).replace("\n", "").replace(".", "");
 
-            System.err.println(idCardNumber);
 
 
-            IdCardDTO idCardDTO = new IdCardDTO(firstname, lastname, fathersname, iin, birthday, idCardNumber);
-
-            return new ResponseEntity<>(idCardDTO, HttpStatus.OK);
+            return new IdCardDTO(firstname, lastname, fathersname, iin, birthday, idCardNumber);
         } catch (Exception e) {
             throw new CustomConflictException(e.getLocalizedMessage());
         }
     }
 
-    @Override
-    public ResponseEntity<?> readIdentityCardDataOld(MultipartFile[] multipartFile) throws TesseractException, IOException, ImageReadException {
+
+    private IdCardDTO readIdentityCardDataOld(MultipartFile[] multipartFile, Rectangle rectangle) throws TesseractException, IOException, ImageReadException {
         try {
 
 
             BufferedImage in = ImageIO.read(convert(multipartFile[0]));
-
-            Rectangle rectangle = new Rectangle(0, 0, 900, 110);
 
             BufferedImage in2 = Scalr.resize(in, 2250, 1450);
 
@@ -130,9 +141,8 @@ public class ReadDataServiceImpl implements ReadDataService {
 
             String idCardNumber = tesseractNumbers.doOCR(croppedIdCardNumber).replace("\n", "").replace(".", "");
 
-            IdCardDTO idCardDTO = new IdCardDTO(firstname, lastname, fathersname, iin, birthday, idCardNumber);
 
-            return new ResponseEntity<>(idCardDTO, HttpStatus.OK);
+            return new IdCardDTO(firstname, lastname, fathersname, iin, birthday, idCardNumber);
         } catch (Exception e) {
             throw new CustomConflictException(e.getLocalizedMessage());
         }
@@ -155,19 +165,14 @@ public class ReadDataServiceImpl implements ReadDataService {
             }
         }
 
-
-        try {
-            File outputFile = new File(PathConstants.PHOTOS_DIRECTORY + "/kek.jpg");
-            ImageIO.write(inputFile, "jpg", outputFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         return inputFile;
     }
 
 
 
-
+    private BufferedImage cropParameter(BufferedImage src) {
+        return src.getSubimage(1, 1, 1100, 300);
+    }
 
     private BufferedImage cropLastname(BufferedImage src, Rectangle rect) {
         return src.getSubimage(770, 470, rect.width, rect.height);
@@ -227,6 +232,7 @@ public class ReadDataServiceImpl implements ReadDataService {
         fos.close();
         return convFile;
     }
+
 
 
 }
