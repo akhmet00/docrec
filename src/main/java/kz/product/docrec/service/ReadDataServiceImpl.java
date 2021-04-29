@@ -58,7 +58,8 @@ public class ReadDataServiceImpl implements ReadDataService {
             BufferedImage croppedIin = cropIin(mono, rectangle);
 
 
-
+//            File outputFile = new File(PathConstants.PHOTOS_DIRECTORY + "/keks.jpg");
+//            ImageIO.write(croppedIdCardNumber, "jpg", outputFile);
 
             String lastname = tesseractChars.doOCR(croppedLastname).replace("\n", "");
             String firstname = tesseractChars.doOCR(croppedFirstName).replace("\n", "");
@@ -76,8 +77,7 @@ public class ReadDataServiceImpl implements ReadDataService {
 
             BufferedImage croppedIdCardNumber = cropIdCardNumber(mono2, rectangle1);
 
-//            File outputFile = new File(PathConstants.PHOTOS_DIRECTORY + "/keks.jpg");
-//            ImageIO.write(croppedIdCardNumber, "jpg", outputFile);
+
 
             String idCardNumber = tesseractNumbers.doOCR(croppedIdCardNumber).replace("\n", "").replace(".", "");
 
@@ -99,28 +99,29 @@ public class ReadDataServiceImpl implements ReadDataService {
 
             BufferedImage in2 = Scalr.resize(in, 2250, 1450);
 
+            BufferedImage mono = invertImage(in2);
+            BufferedImage croppedLastname = cropLastnameOld(mono, rectangle);
+            BufferedImage croppedFirstName = cropFirstnameOld(mono, rectangle);
+            BufferedImage croppedFathersName = cropFathersnameOld(mono, rectangle);
+            BufferedImage croppedBirthday = cropBirthdayOld(mono, rectangle);
+            BufferedImage croppedIin = cropIinOld(mono, rectangle);
 
-            BufferedImage cropedLastname = cropLastnameOld(in2, rectangle);
-            BufferedImage cropedFirstName = cropFirstnameOld(in2, rectangle);
-            BufferedImage cropedFathersName = cropFathersnameOld(in2, rectangle);
-            BufferedImage cropedBirthday = cropBirthdayOld(in2, rectangle);
-            BufferedImage cropedIin = cropIinOld(in2, rectangle);
 
 
-
-            String lastname = tesseractChars.doOCR(cropedLastname).replace("\n", "").replace(".", "");
-            String firstname = tesseractChars.doOCR(cropedFirstName).replace("\n", "").replace(".", "");
-            String fathersname = tesseractChars.doOCR(cropedFathersName).replace("\n", "").replace(".", "");
-            String birthday = tesseractNumbers.doOCR(cropedBirthday).replace("\n", "");
-            String iin = tesseractNumbers.doOCR(cropedIin).replace("\n", "").replace(".", "");
+            String lastname = tesseractChars.doOCR(croppedLastname).replace("\n", "").replace(".", "");
+            String firstname = tesseractChars.doOCR(croppedFirstName).replace("\n", "").replace(".", "");
+            String fathersname = tesseractChars.doOCR(croppedFathersName).replace("\n", "").replace(".", "");
+            String birthday = tesseractNumbers.doOCR(croppedBirthday).replace("\n", "");
+            String iin = tesseractNumbers.doOCR(croppedIin).replace("\n", "").replace(".", "");
 
             BufferedImage in3 = ImageIO.read(convert(multipartFile[1]));
 
             Rectangle rectangle1 = new Rectangle(0, 0, 700, 330);
 
             BufferedImage in4 = Scalr.resize(in3, 2250, 1450);
+            BufferedImage mono1 = invertImage(in4);
 
-            BufferedImage croppedIdCardNumber = cropIdCardNumberOld(in4, rectangle1);
+            BufferedImage croppedIdCardNumber = cropIdCardNumberOld(mono1, rectangle1);
 
             String idCardNumber = tesseractNumbers.doOCR(croppedIdCardNumber).replace("\n", "").replace(".", "");
 
@@ -152,10 +153,6 @@ public class ReadDataServiceImpl implements ReadDataService {
     }
 
 
-
-    private BufferedImage cropParameter(BufferedImage src) {
-        return src.getSubimage(1, 1, 1100, 300);
-    }
 
     private BufferedImage cropLastname(BufferedImage src, Rectangle rect) {
         return src.getSubimage(770, 470, rect.width, rect.height);
