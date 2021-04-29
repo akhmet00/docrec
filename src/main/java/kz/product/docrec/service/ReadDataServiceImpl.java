@@ -45,7 +45,7 @@ public class ReadDataServiceImpl implements ReadDataService {
 
             Rectangle rectangle = new Rectangle(0, 0, 900, 130);
 
-            BufferedImage in = ImageIO.read(convert(multipartFile[1]));
+            BufferedImage in = ImageIO.read(convert(multipartFile[0]));
 
             BufferedImage in2 = Scalr.resize(in, 2250, 1450);
             BufferedImage mono = invertImage(in2);
@@ -67,7 +67,7 @@ public class ReadDataServiceImpl implements ReadDataService {
             String birthday = tesseractNumbers.doOCR(croppedBirthday).replace("\n", "");
             String iin = tesseractNumbers.doOCR(croppedIin).replace("\n", "");
 
-            BufferedImage in3 = ImageIO.read(convert(multipartFile[0]));
+            BufferedImage in3 = ImageIO.read(convert(multipartFile[1]));
 
             Rectangle rectangle1 = new Rectangle(0, 0, 700, 230);
 
@@ -95,7 +95,7 @@ public class ReadDataServiceImpl implements ReadDataService {
         try {
 
             Rectangle rectangle = new Rectangle(0, 0, 900, 130);
-            BufferedImage in = ImageIO.read(convert(multipartFile[1]));
+            BufferedImage in = ImageIO.read(convert(multipartFile[0]));
 
             BufferedImage in2 = Scalr.resize(in, 2250, 1450);
 
@@ -114,7 +114,7 @@ public class ReadDataServiceImpl implements ReadDataService {
             String birthday = tesseractNumbers.doOCR(croppedBirthday).replace("\n", "");
             String iin = tesseractNumbers.doOCR(croppedIin).replace("\n", "").replace(".", "");
 
-            BufferedImage in3 = ImageIO.read(convert(multipartFile[0]));
+            BufferedImage in3 = ImageIO.read(convert(multipartFile[1]));
 
             Rectangle rectangle1 = new Rectangle(0, 0, 700, 330);
 
