@@ -33,4 +33,9 @@ public class ReadController {
         return readDataService.readIdentityCard(multipartFile);
     }
 
+    @PostMapping("/identityCard/old")
+    public ResponseEntity<?> readFromPhotoOld(@RequestParam("file") MultipartFile[] multipartFile) throws TesseractException, IOException, ImageReadException {
+        return readDataService.readIdentityCardOld(multipartFile);
+    }
+
 }

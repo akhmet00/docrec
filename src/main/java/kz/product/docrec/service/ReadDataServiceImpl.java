@@ -47,13 +47,30 @@ public class ReadDataServiceImpl implements ReadDataService {
 
         BufferedImage croppedParameter = cropParameter(mono);
 
-        String paraeter = tesseractChars.doOCR(croppedParameter).replace("\n", " ");
+        //String paraeter = tesseractChars.doOCR(croppedParameter).replace("\n", " ");
 
-        IdCardDTO idCardDTO = null;
+        IdCardDTO idCardDTO =  readIdentityCardData(multipartFile, rectangle);
 
-        if(paraeter.contains("ЖЕКЕКУӘЛІК"))
-            idCardDTO=   readIdentityCardData(multipartFile, rectangle);
-        else idCardDTO = readIdentityCardDataOld(multipartFile, rectangle);
+
+        return new ResponseEntity<>(idCardDTO, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> readIdentityCardOld(MultipartFile[] multipartFile) throws TesseractException, IOException, ImageReadException {
+
+        BufferedImage in = ImageIO.read(convert(multipartFile[0]));
+
+        Rectangle rectangle = new Rectangle(0, 0, 900, 130);
+
+        BufferedImage in2 = Scalr.resize(in, 2250, 1450);
+        BufferedImage mono = invertImage(in2);
+
+        BufferedImage croppedParameter = cropParameter(mono);
+
+       // String paraeter = tesseractChars.doOCR(croppedParameter).replace("\n", " ");
+
+        IdCardDTO idCardDTO =  readIdentityCardDataOld(multipartFile, rectangle);
+
 
         return new ResponseEntity<>(idCardDTO, HttpStatus.OK);
     }
