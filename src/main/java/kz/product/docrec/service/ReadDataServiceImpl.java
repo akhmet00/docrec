@@ -36,49 +36,14 @@ public class ReadDataServiceImpl implements ReadDataService {
         this.textParser = textParser;
     }
 
-    @Override
-    public ResponseEntity<?> readIdentityCard(MultipartFile[] multipartFile) throws TesseractException, IOException, ImageReadException {
-        BufferedImage in = ImageIO.read(convert(multipartFile[0]));
 
-        Rectangle rectangle = new Rectangle(0, 0, 900, 130);
-
-        BufferedImage in2 = Scalr.resize(in, 2250, 1450);
-        BufferedImage mono = invertImage(in2);
-
-        BufferedImage croppedParameter = cropParameter(mono);
-
-        //String paraeter = tesseractChars.doOCR(croppedParameter).replace("\n", " ");
-
-        IdCardDTO idCardDTO =  readIdentityCardData(multipartFile, rectangle);
-
-
-        return new ResponseEntity<>(idCardDTO, HttpStatus.OK);
-    }
 
     @Override
-    public ResponseEntity<?> readIdentityCardOld(MultipartFile[] multipartFile) throws TesseractException, IOException, ImageReadException {
-
-        BufferedImage in = ImageIO.read(convert(multipartFile[0]));
-
-        Rectangle rectangle = new Rectangle(0, 0, 900, 130);
-
-        BufferedImage in2 = Scalr.resize(in, 2250, 1450);
-        BufferedImage mono = invertImage(in2);
-
-        BufferedImage croppedParameter = cropParameter(mono);
-
-       // String paraeter = tesseractChars.doOCR(croppedParameter).replace("\n", " ");
-
-        IdCardDTO idCardDTO =  readIdentityCardDataOld(multipartFile, rectangle);
-
-
-        return new ResponseEntity<>(idCardDTO, HttpStatus.OK);
-    }
-
-
-    private IdCardDTO readIdentityCardData(MultipartFile[] multipartFile, Rectangle rectangle) {
+    public ResponseEntity<?> readIdentityCard(MultipartFile[] multipartFile) {
 
         try {
+
+            Rectangle rectangle = new Rectangle(0, 0, 900, 130);
 
             BufferedImage in = ImageIO.read(convert(multipartFile[0]));
 
@@ -118,17 +83,18 @@ public class ReadDataServiceImpl implements ReadDataService {
 
 
 
-            return new IdCardDTO(firstname, lastname, fathersname, iin, birthday, idCardNumber);
+            return new ResponseEntity<>(new IdCardDTO(firstname, lastname, fathersname, iin, birthday, idCardNumber), HttpStatus.OK) ;
         } catch (Exception e) {
             throw new CustomConflictException(e.getLocalizedMessage());
         }
     }
 
 
-    private IdCardDTO readIdentityCardDataOld(MultipartFile[] multipartFile, Rectangle rectangle) throws TesseractException, IOException, ImageReadException {
+    @Override
+    public ResponseEntity<?> readIdentityCardOld(MultipartFile[] multipartFile)  throws TesseractException, IOException, ImageReadException {
         try {
 
-
+            Rectangle rectangle = new Rectangle(0, 0, 900, 130);
             BufferedImage in = ImageIO.read(convert(multipartFile[0]));
 
             BufferedImage in2 = Scalr.resize(in, 2250, 1450);
@@ -159,7 +125,7 @@ public class ReadDataServiceImpl implements ReadDataService {
             String idCardNumber = tesseractNumbers.doOCR(croppedIdCardNumber).replace("\n", "").replace(".", "");
 
 
-            return new IdCardDTO(firstname, lastname, fathersname, iin, birthday, idCardNumber);
+            return new ResponseEntity<>(new IdCardDTO(firstname, lastname, fathersname, iin, birthday, idCardNumber),HttpStatus.OK);
         } catch (Exception e) {
             throw new CustomConflictException(e.getLocalizedMessage());
         }
