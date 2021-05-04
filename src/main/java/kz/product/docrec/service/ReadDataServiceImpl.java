@@ -94,7 +94,7 @@ public class ReadDataServiceImpl implements ReadDataService {
     public ResponseEntity<?> readIdentityCardOld(MultipartFile[] multipartFile)  throws TesseractException, IOException, ImageReadException {
         try {
 
-            Rectangle rectangle = new Rectangle(0, 0, 900, 130);
+            Rectangle rectangle = new Rectangle(0, 0, 900, 120);
             BufferedImage in = ImageIO.read(convert(multipartFile[0]));
 
             BufferedImage in2 = Scalr.resize(in, 2250, 1450);
@@ -122,6 +122,9 @@ public class ReadDataServiceImpl implements ReadDataService {
             BufferedImage mono1 = invertImage(in4);
 
             BufferedImage croppedIdCardNumber = cropIdCardNumberOld(mono1, rectangle1);
+
+//            File outputFile = new File(PathConstants.PHOTOS_DIRECTORY + "/keks.jpg");
+//            ImageIO.write(croppedIdCardNumber, "jpg", outputFile);
 
             String idCardNumber = tesseractNumbers.doOCR(croppedIdCardNumber).replace("\n", "").replace(".", "");
 
@@ -180,7 +183,7 @@ public class ReadDataServiceImpl implements ReadDataService {
 
     ///////////////////////////
     private BufferedImage cropLastnameOld(BufferedImage src, Rectangle rect) {
-        return src.getSubimage(770, 640, rect.width, rect.height);
+        return src.getSubimage(770, 630, rect.width, rect.height);
     }
 
     private BufferedImage cropFirstnameOld(BufferedImage src, Rectangle rect) {
